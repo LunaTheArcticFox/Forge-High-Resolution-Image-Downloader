@@ -5,6 +5,8 @@ Forge's resource folder is in your Forge's installation folder and is called "re
 
 The "Highest Quality" option downloads the absolute best quality available. The visual difference is nearly imperceptible and this will take *a lot* more disk space.
 
+REQUIRES Java 8
+
 ---
 ---
 
