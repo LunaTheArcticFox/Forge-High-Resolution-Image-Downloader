@@ -6,7 +6,11 @@
 
     <groupId>net.krazyweb</groupId>
     <artifactId>Forge-Image-Downloader</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
+    
+    <properties>
+        <programVersion>1.1.0.0</programVersion>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -36,7 +40,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Version>1.0.0.0</Implementation-Version>
+                            <Implementation-Version>${programVersion}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -85,7 +89,7 @@
                                 <configuration>
                                     <headerType>gui</headerType>
                                     <outfile>${project.build.directory}/forgecardimagedownloader.exe</outfile>
-                                    <jar>Forge-Image-Downloader-1.0-jar-with-dependencies.jar</jar>
+                                    <jar>Forge-Image-Downloader-${project.version}-jar-with-dependencies.jar</jar>
                                     <dontWrapJar>true</dontWrapJar>
                                     <errTitle>forgecardimagedownloader</errTitle>
                                     <icon>src/main/resources/package/forge.ico</icon>
@@ -99,12 +103,12 @@
                                         <maxHeapSize>512</maxHeapSize>
                                     </jre>
                                     <versionInfo>
-                                        <fileVersion>1.0.0.0</fileVersion>
-                                        <txtFileVersion>1.0.0.0</txtFileVersion>
+                                        <fileVersion>${programVersion}</fileVersion>
+                                        <txtFileVersion>${programVersion}</txtFileVersion>
                                         <fileDescription>Forge</fileDescription>
                                         <copyright>Mitchell Matthews</copyright>
-                                        <productVersion>1.0.0.0</productVersion>
-                                        <txtProductVersion>1.0.0.0</txtProductVersion>
+                                        <productVersion>${programVersion}</productVersion>
+                                        <txtProductVersion>${programVersion}</txtProductVersion>
                                         <productName>Forge Card Image Downloader</productName>
                                         <internalName>forgecardimagedownloader</internalName>
                                         <originalFilename>forgecardimagedownloader.exe</originalFilename>
@@ -138,7 +142,7 @@
                                             <fileset dir="src/main/resources/package" includes="forgecardimagedownloader.sh" />
                                             <fileset dir="src/main/resources/package" includes="forgecardimagedownloader.command" />
                                             <fileset dir="${project.build.directory}" includes="forgecardimagedownloader.exe" />
-                                            <fileset dir="${project.build.directory}" includes="Forge-Image-Downloader-1.0-jar-with-dependencies.jar" />
+                                            <fileset dir="${project.build.directory}" includes="Forge-Image-Downloader-${project.version}-jar-with-dependencies.jar" />
                                         </copy>
                                         <chmod file="${project.build.directory}/${project.build.finalName}/forgecardimagedownloader.sh" perm="a+rx" />
                                         <chmod file="${project.build.directory}/${project.build.finalName}/forgecardimagedownloader.command" perm="a+rx" />

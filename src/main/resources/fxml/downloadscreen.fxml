@@ -15,8 +15,13 @@
         <Label fx:id="countLabel" text=""/>
     </VBox>
     
+    <VBox alignment="center" spacing="2">
+        <Label fx:id="speedLabel" text=""/>
+        <Label fx:id="timeLabel" text=""/>
+    </VBox>
+    
     <ProgressBar fx:id="progressBar" prefWidth="150" prefHeight="40"/>
     
-    <Button text="Stop Download" prefWidth="150" prefHeight="100" onAction="#stopDownload" />
+    <Button text="Stop Download" prefWidth="150" prefHeight="80" onAction="#stopDownload" />
     
 </VBox>

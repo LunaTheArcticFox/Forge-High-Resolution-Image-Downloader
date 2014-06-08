@@ -30,8 +30,6 @@ public class ForgeProfileProperties {
 		try {
 			if (propFile.canRead()) {
 				props.load(new FileInputStream(propFile));
-			} else {
-				System.out.println("Can't read");
 			}
 		}
 		catch (IOException e) {
