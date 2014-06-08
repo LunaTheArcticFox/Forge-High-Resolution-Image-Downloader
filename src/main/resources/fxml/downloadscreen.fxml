@@ -1,0 +1,22 @@
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressBar?>
+        
+<VBox fx:controller="net.krazyweb.forge.imagedownloader.DownloadController"
+      xmlns:fx="http://javafx.com/fxml" alignment="center" spacing="25"
+      prefWidth="550" prefHeight="100" stylesheets="/css/main.css">
+    
+    <Label fx:id="stageLabel" text="Processing:" id="stageLabel" />
+    
+    <VBox alignment="center" spacing="2">
+        <Label fx:id="itemLabel" text=""/>
+        <Label fx:id="countLabel" text=""/>
+    </VBox>
+    
+    <ProgressBar fx:id="progressBar" prefWidth="150" prefHeight="40"/>
+    
+    <Button text="Stop Download" prefWidth="150" prefHeight="100" onAction="#stopDownload" />
+    
+</VBox>

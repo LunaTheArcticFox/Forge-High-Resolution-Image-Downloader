@@ -1,0 +1,14 @@
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<VBox fx:controller="net.krazyweb.forge.imagedownloader.PreDownloadController"
+      xmlns:fx="http://javafx.com/fxml" alignment="center" spacing="15"
+      prefWidth="550" prefHeight="100">
+
+    <Button text="Start Download" prefWidth="150" prefHeight="100" onAction="#downloadButtonPressed"/>
+
+    <CheckBox fx:id="checkBox" text="Highest Quality"/>
+    <CheckBox fx:id="checkBoxOverwrite" text="Overwrite Existing Images"/>
+
+</VBox>

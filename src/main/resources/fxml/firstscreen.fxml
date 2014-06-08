@@ -1,0 +1,53 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<GridPane fx:controller="net.krazyweb.forge.imagedownloader.MainController"
+      xmlns:fx="http://javafx.com/fxml" alignment="center" vgap="5" hgap="15"
+      prefWidth="550" prefHeight="100">
+
+    <Label text="Forge Resources Folder:">
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+    </Label>
+    
+    <TextField fx:id="folderPathField" text="" prefWidth="500" prefHeight="30">
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>1</GridPane.rowIndex>
+    </TextField>
+    
+    <Button text="Choose Folder" prefWidth="100" prefHeight="30" onAction="#chooseFolderButtonPressed">
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>1</GridPane.rowIndex>
+    </Button>
+
+    <Label text="Cards Folder (if empty, defaults to Forge's folder):">
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>2</GridPane.rowIndex>
+        <GridPane.margin>
+            <Insets bottom="0.0" left="0.0" right="0.0" top="15.0"/>
+        </GridPane.margin>
+    </Label>
+    
+    <TextField fx:id="cardsPathField" text="" prefWidth="500" prefHeight="30">
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>3</GridPane.rowIndex>
+    </TextField>
+
+    <Button text="Choose Folder" prefWidth="100" prefHeight="30" onAction="#chooseCardsFolderButtonPressed">
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>3</GridPane.rowIndex>
+    </Button>
+    
+    <Button fx:id="okButton" text="OK" prefWidth="100" prefHeight="40" disable="true" onAction="#okButtonPressed">
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>4</GridPane.rowIndex>
+        <GridPane.columnSpan>2</GridPane.columnSpan>
+        <GridPane.halignment>CENTER</GridPane.halignment>
+        <GridPane.margin>
+            <Insets bottom="0.0" left="0.0" right="0.0" top="25.0"/>
+        </GridPane.margin>
+    </Button>
+    
+</GridPane>
