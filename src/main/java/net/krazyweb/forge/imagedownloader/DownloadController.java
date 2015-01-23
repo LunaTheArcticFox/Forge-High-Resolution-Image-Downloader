@@ -18,64 +18,73 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DownloadController {
-	
-	private static class Pair<T, V> {
-		private T value1;
-		private V value2;
-	}
-	
+
 	private static class Edition {
-		
+
 		private String setID;
 		private String setName;
 		private String alias;
-		
-		private Map<String, Pair<String, Integer>> cards = new HashMap<>();
-		
+
+		private List<Card> cards = new ArrayList<>();
+
 	}
-	
+
+	private static class Card {
+		private String cardName;
+		private String url;
+		private String setName;
+		private int size = 1;
+	}
+
 	private static class IntegerContainer {
 		private int value;
+	}
+
+	private static class LongContainer {
+		private long value;
 	}
 
 	private DownloaderService service;
 
 	protected static boolean shouldStop = false;
-	
+
 	@FXML
 	private Label stageLabel;
-	
+
 	@FXML
 	private Label itemLabel;
-	
+
 	@FXML
 	private Label countLabel;
-	
+
 	@FXML
 	private Label speedLabel;
-	
+
 	@FXML
 	private Label timeLabel;
-	
+
 	@FXML
 	private ProgressBar progressBar;
-	
+
 	@FXML
 	private void stopDownload() {
 		shouldStop = true;
 	}
-	
+
 	@FXML
 	private void initialize() {
 
 		progressBar.setProgress(0);
-		
+
 		service = new DownloaderService();
-		
+
 		service.setOnFailed(value -> {
 			try {
 				throw service.getException();
@@ -83,7 +92,7 @@ public class DownloadController {
 				throwable.printStackTrace();
 			}
 		});
-		
+
 		service.setOnSucceeded(event -> {
 
 			progressBar.progressProperty().unbind();
@@ -101,41 +110,41 @@ public class DownloadController {
 			timeLabel.setText("");
 
 		});
-		
+
 		progressBar.progressProperty().bind(service.progressProperty());
 		stageLabel.textProperty().bind(service.titleProperty());
 		itemLabel.textProperty().bind(service.messageProperty());
 		countLabel.textProperty().bind(service.imageCountProperty());
 		speedLabel.textProperty().bind(service.speedProperty());
 		timeLabel.textProperty().bind(service.timeProperty());
-		
-		
+
+
 		service.start();
-		
+
 	}
-	
+
 	private class DownloaderService extends Service<Void> {
 
 		private final StringProperty imageCount = new SimpleStringProperty();
 		private final StringProperty speed = new SimpleStringProperty();
 		private final StringProperty time = new SimpleStringProperty();
-		
+
 		public StringProperty imageCountProperty() {
 			return imageCount;
 		}
-		
+
 		public StringProperty speedProperty() {
 			return speed;
 		}
-	
+
 		public StringProperty timeProperty() {
 			return time;
-		}	
-		
+		}
+
 		private void updateImageCount(int count, int total) {
 			Platform.runLater(() -> imageCount.set(count + " of " + total));
 		}
-		
+
 		private void updateImageCount(String message) {
 			Platform.runLater(() -> imageCount.set(message));
 		}
@@ -143,7 +152,7 @@ public class DownloadController {
 		private void updateSpeed(String message) {
 			Platform.runLater(() -> speed.set(message));
 		}
-		
+
 		private void updateTime(String message) {
 			Platform.runLater(() -> time.set(message));
 		}
@@ -153,10 +162,10 @@ public class DownloadController {
 			return new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					
+
 					ForgeProfileProperties.load(Data.editionsFolder.getParent().getParent().resolve("forge.profile.properties"));
 					Path cardsFolder = Paths.get(ForgeProfileProperties.getCardPicsDir());
-					
+
 					if (Data.cardsFolder != null) {
 						cardsFolder = Data.cardsFolder;
 						Files.createDirectories(cardsFolder.getParent());
@@ -168,37 +177,38 @@ public class DownloadController {
 					List<Edition> editions = new ArrayList<>();
 					List<Path> paths = Files.list(Data.editionsFolder).collect(Collectors.toList());
 
-					IntegerContainer integerContainer = new IntegerContainer();
-					int editionFileCount = 1;
+					IntegerContainer currentProgress = new IntegerContainer();
+					final IntegerContainer editionFileCount = new IntegerContainer();
+					editionFileCount.value = 1;
 
-					for (Path file : paths) {
-						
+					paths.parallelStream().forEach(file -> {
+
 						if (!file.getFileName().toString().endsWith(".txt")) {
-							editionFileCount++;
-							continue;
+							editionFileCount.value++;
+							return;
 						}
-						
+
 						if (shouldStop) {
 							updateProgress(1, 1);
 							updateTitle("Download Stopped");
 							updateMessage("");
 							updateImageCount("");
-							return null;
+							return;
 						}
-						
+
 						String fileName = file.getFileName().toString();
 						fileName = fileName.substring(0, fileName.lastIndexOf(".txt"));
 						updateMessage(fileName);
-						updateImageCount(editionFileCount++ + " of " + paths.size());
-						
+						updateImageCount(editionFileCount.value++ + " of " + paths.size());
+
 						Edition edition = parseFile(file);
 						if (edition != null) {
 							editions.add(edition);
 						}
-						
-						updateProgress(integerContainer.value++, paths.size());
-						
-					}
+
+						updateProgress(currentProgress.value++, paths.size());
+
+					});
 
 					if (shouldStop) {
 						updateProgress(1, 1);
@@ -208,81 +218,64 @@ public class DownloadController {
 						return null;
 					}
 
+					List<Card> cards = new ArrayList<>();
+					editions.forEach(edition -> cards.addAll(edition.cards));
+
 					updateTitle("Downloading Images");
 
-					integerContainer.value = 0;
-					
-					//long totalSize = 0;
-					
-					/*for (Edition edition : editions) {
-						for (String key : edition.cards.keySet()) {
-							Path outputPath = cardsFolder.resolve(Paths.get(edition.setName + "/" + key + ".full.jpg"));
-							if (!(Files.exists(outputPath) && !Data.overwrite && outputPath.toFile().length() == edition.cards.get(key).value2)) {
-								totalSize += edition.cards.get(key).value2;
-							}
+					currentProgress.value = 0;
+
+					int numberOfCards = cards.size();
+
+					final IntegerContainer downloadedThisSecond = new IntegerContainer();
+					downloadedThisSecond.value = 0;
+					final LongContainer timeUpdated = new LongContainer();
+					timeUpdated.value = System.currentTimeMillis();
+
+					final Path finalCardsFolder = cardsFolder;
+
+					cards.parallelStream().forEach(card -> {
+
+						if (shouldStop) {
+							updateProgress(1, 1);
+							updateTitle("Download Stopped");
+							updateMessage("");
+							updateImageCount("");
+							updateSpeed("");
+							updateTime("");
+							return;
 						}
-					}
-*/
-					int numberOfCards = countCards(editions);
 
-					int downloadedThisSecond = 0;
-					long timeUpdated = System.currentTimeMillis();
+						updateMessage(card.cardName);
+						updateImageCount(currentProgress.value, numberOfCards);
 
-					//LinkedList<Integer> latestSpeeds = new LinkedList<>();
+						Path outputPath = finalCardsFolder.resolve(Paths.get(card.setName + "/" + card.cardName + ".full.jpg"));
 
-					for (Edition edition : editions) {
+						try {
+							downloadCard(outputPath, card.url, card.size);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 
-						for (String cardName : edition.cards.keySet()) {
+						downloadedThisSecond.value += card.size;
 
-							if (shouldStop) {
-								updateProgress(1, 1);
-								updateTitle("Download Stopped");
-								updateMessage("");
-								updateImageCount("");
-								updateSpeed("");
-								updateTime("");
-								return null;
-							}
+						if (System.currentTimeMillis() - timeUpdated.value >= 1000) {
 
-							updateMessage(cardName);
-							updateImageCount(integerContainer.value, numberOfCards);
-							
-							Path outputPath = cardsFolder.resolve(Paths.get(edition.setName + "/" + cardName + ".full.jpg"));
-							downloadCard(outputPath, edition.cards.get(cardName).value1, edition.cards.get(cardName).value2);
-							downloadedThisSecond += edition.cards.get(cardName).value2;
+							synchronized (this) {
+								timeUpdated.value = System.currentTimeMillis();
 
-							if (System.currentTimeMillis() - timeUpdated >= 1000) {
-								
-								timeUpdated = System.currentTimeMillis();
-								//totalSize -= downloadedThisSecond;
-	
-								/*latestSpeeds.addFirst(downloadedThisSecond);
-								if (latestSpeeds.size() > 20) {
-									latestSpeeds.removeLast();
-								}*/
-								
-								int speed = (int) ((double) downloadedThisSecond / 1024);
+								int speed = (int) ((double) downloadedThisSecond.value / 1024);
 								updateSpeed(speed + " KB/s");
-								
-								/*int latestSpeed = 0;
-								for (Integer s : latestSpeeds) {
-									latestSpeed += s;
-								}
-								
-								int timeRemaining = (int) ((double) totalSize / ((double) latestSpeed / latestSpeeds.size()));
-								
-								updateTime(timeRemaining  + " Seconds Remaining");*/
-								
-								downloadedThisSecond = 0;
-								
+
+								downloadedThisSecond.value = 0;
 							}
-							
-							updateProgress(integerContainer.value++, numberOfCards);
 
 						}
 
-					}
+						updateProgress(currentProgress.value++, numberOfCards);
 
+					});
+					
 					return null;
 
 				}
@@ -290,15 +283,15 @@ public class DownloadController {
 			};
 
 		}
-		
+
 	}
-	
+
 	private Edition parseFile(Path file) {
-		
+
 		if (Files.isDirectory(file)) {
 			return null;
 		}
-		
+
 		Edition edition = new Edition();
 
 		Map<String, Integer> cards = new HashMap<>();
@@ -329,11 +322,11 @@ public class DownloadController {
 
 				}
 			}
-			
+
 			if (edition.setName == null) {
 				edition.setName = edition.setID;
 			}
-			
+
 			if (edition.setName.equals("ISD")) {
 				cards.put("Bane of Hanweir", 1);
 				cards.put("Garruk, the Veil-Cursed", 1);
@@ -356,7 +349,7 @@ public class DownloadController {
 				cards.put("Unholy Fiend", 1);
 				cards.put("Wildblood Pack", 1);
 			}
-			
+
 			if (edition.setName.equals("DKA")) {
 				cards.put("Archdemon of Greed", 1);
 				cards.put("Chalice of Death", 1);
@@ -372,7 +365,7 @@ public class DownloadController {
 				cards.put("Werewolf Ransacker", 1);
 				cards.put("Withengar Unbound", 1);
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -392,7 +385,7 @@ public class DownloadController {
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
-	
+
 		try {
 			pageSetAlias = Jsoup.connect("http://mtgimage.com/set/" + edition.alias).get();
 		} catch (Exception e) {
@@ -408,39 +401,39 @@ public class DownloadController {
 				for (int i = 1; i <= cardCount; i++) {
 
 					String newCardName = cardName + "" + i;
-	
-					Pair<String, Integer> cardInfo = getCardInfo(newCardName, edition, pageSetName, pageSetID, pageSetAlias);
+
+					Card cardInfo = getCardInfo(newCardName, edition, pageSetName, pageSetID, pageSetAlias);
 					if (cardInfo != null) {
-						edition.cards.put(newCardName, cardInfo);
+						edition.cards.add(cardInfo);
 					}
 
 				}
 
 			} else {
-				
-				Pair<String, Integer> cardInfo = getCardInfo(cardName, edition, pageSetName, pageSetID, pageSetAlias);
+
+				Card cardInfo = getCardInfo(cardName, edition, pageSetName, pageSetID, pageSetAlias);
 				if (cardInfo != null) {
-					edition.cards.put(cardName, cardInfo);
+					edition.cards.add(cardInfo);
 				}
 
 			}
-			
+
 		}
 
 		return edition;
-		
+
 	}
-	
-	private Pair<String, Integer> getCardInfo(String cardName, Edition edition, Document pageSetName, Document pageSetID, Document pageSetAlias) {
+
+	private Card getCardInfo(String cardName, Edition edition, Document pageSetName, Document pageSetID, Document pageSetAlias) {
 
 		if (pageSetName == null && pageSetID == null && pageSetAlias == null) {
 			System.out.println("Set not found, skipping: " + edition.setName);
 			return null;
 		}
-		
+
 		String url;
 		String cardFileName;
-		
+
 		boolean pageName = false;
 		boolean pageID = false;
 		boolean pageAlias = false;
@@ -450,7 +443,7 @@ public class DownloadController {
 		} else {
 			cardFileName = cardName + ".jpg";
 		}
-		
+
 		if (pageSetName != null) {
 			Elements e = pageSetName.select("a:contains(" + cardFileName + ")");
 			if (!e.isEmpty()) {
@@ -471,10 +464,10 @@ public class DownloadController {
 				pageAlias = true;
 			}
 		}
-		
+
 		String setID;
 		Document pageForSize;
-		
+
 		if (pageName) {
 			setID = edition.setName;
 			pageForSize = pageSetName;
@@ -487,62 +480,52 @@ public class DownloadController {
 		} else {
 			return null;
 		}
-		
+
 		if (Data.highQuality) {
 			url = "http://mtgimage.com/set/" + setID + "/" + cardName.replaceAll(" ", "%20") + ".hq.jpg";
 		} else {
 			url = "http://mtgimage.com/set/" + setID + "/" + cardName.replaceAll(" ", "%20") + ".jpg";
 		}
-		
+
 		int size;
-		
+
 		if (Data.highQuality) {
 			size = getFileSize(cardFileName, pageForSize);
 		} else {
 			size = getFileSize(cardFileName, pageForSize);
 		}
-		
-		Pair<String, Integer> output = new Pair<>();
-		output.value1 = url;
-		output.value2 = size;
-		
-		return output;
-		
+
+		Card card = new Card();
+		card.cardName = cardName;
+		card.url = url;
+		card.size = size;
+		card.setName = edition.setName;
+
+		return card;
+
 	}
-	
+
 	private int getFileSize(String cardFileName, Document page) {
 
 		Elements e = page.select("a:contains(" + cardFileName + ")");
-		
+
 		if (e.size() == 0) {
 			return -1;
 		}
-		
+
 		String sizeString = e.get(0).nextSibling().toString();
 		sizeString = sizeString.substring(sizeString.lastIndexOf(' ') + 1).trim();
-		
+
 		return Integer.parseInt(sizeString);
-		
-	}
-	
-	private int countCards(List<Edition> editions) {
-		
-		int output = 0;
-		
-		for (Edition edition : editions) {
-			output += edition.cards.size();
-		}
-		
-		return output;
-		
+
 	}
 
 	private void downloadCard(Path outputPath, String urlString, int expectedSize) throws IOException {
-		
-		if (Files.exists(outputPath) && !Data.overwrite && outputPath.toFile().length() == expectedSize) {
+
+		if (Files.exists(outputPath) && (!Data.overwrite || outputPath.toFile().length() == expectedSize)) {
 			return;
 		}
-		
+
 		Files.createDirectories(outputPath.getParent());
 
 		URL url = new URL(urlString);
@@ -564,12 +547,6 @@ public class DownloadController {
 		}
 		outs.close();
 
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
 	}
-	
+
 }
