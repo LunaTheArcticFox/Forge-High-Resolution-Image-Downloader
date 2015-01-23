@@ -6,7 +6,7 @@
 
     <groupId>net.krazyweb</groupId>
     <artifactId>Forge-Image-Downloader</artifactId>
-    <version>1.2</version>
+    <version>1.2-SNAPSHOT</version>
 
     <properties>
         <programVersion>1.2.0.0</programVersion>
