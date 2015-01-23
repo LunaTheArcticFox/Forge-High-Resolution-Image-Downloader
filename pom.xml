@@ -6,10 +6,10 @@
 
     <groupId>net.krazyweb</groupId>
     <artifactId>Forge-Image-Downloader</artifactId>
-    <version>1.1</version>
-    
+    <version>1.2</version>
+
     <properties>
-        <programVersion>1.1.0.0</programVersion>
+        <programVersion>1.2.0.0</programVersion>
     </properties>
 
     <dependencies>
@@ -30,6 +30,8 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>Forge-Image-Downloader</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -47,9 +49,7 @@
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <!-- this is used for inheritance merges -->
                         <phase>package</phase>
-                        <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -58,7 +58,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>distribute</id>
@@ -74,7 +74,7 @@
                             <target>1.8</target>
                         </configuration>
                     </plugin>
-                    
+
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
@@ -88,11 +88,11 @@
                                 </goals>
                                 <configuration>
                                     <headerType>gui</headerType>
-                                    <outfile>${project.build.directory}/forgecardimagedownloader.exe</outfile>
-                                    <jar>Forge-Image-Downloader-${project.version}-jar-with-dependencies.jar</jar>
+                                    <outfile>${project.build.directory}/Forge-Image-Downloader.exe</outfile>
+                                    <jar>Forge-Image-Downloader.jar</jar>
                                     <dontWrapJar>true</dontWrapJar>
                                     <errTitle>forgecardimagedownloader</errTitle>
-                                    <icon>src/main/resources/package/forge.ico</icon>
+                                    <icon>package/forge.ico</icon>
                                     <classPath>
                                         <mainClass>net.krazyweb.forge.imagedownloader.Main</mainClass>
                                         <addDependencies>false</addDependencies>
@@ -109,9 +109,9 @@
                                         <copyright>Mitchell Matthews</copyright>
                                         <productVersion>${programVersion}</productVersion>
                                         <txtProductVersion>${programVersion}</txtProductVersion>
-                                        <productName>Forge Card Image Downloader</productName>
-                                        <internalName>forgecardimagedownloader</internalName>
-                                        <originalFilename>forgecardimagedownloader.exe</originalFilename>
+                                        <productName>Forge High-Res Image Downloader</productName>
+                                        <internalName>forgeimagedownloader</internalName>
+                                        <originalFilename>Forge-Image-Downloader.exe</originalFilename>
                                     </versionInfo>
                                 </configuration>
                             </execution>
@@ -139,27 +139,27 @@
                                         <mkdir dir="${project.build.directory}/${project.build.finalName}" />
                                         <copy todir="${project.build.directory}/${project.build.finalName}">
                                             <fileset dir="" includes="readme.txt" />
-                                            <fileset dir="src/main/resources/package" includes="forgecardimagedownloader.sh" />
-                                            <fileset dir="src/main/resources/package" includes="forgecardimagedownloader.command" />
-                                            <fileset dir="${project.build.directory}" includes="forgecardimagedownloader.exe" />
-                                            <fileset dir="${project.build.directory}" includes="Forge-Image-Downloader-${project.version}-jar-with-dependencies.jar" />
+                                            <fileset dir="package" includes="Forge-Image-Downloader.sh" />
+                                            <fileset dir="package" includes="Forge-Image-Downloader.command" />
+                                            <fileset dir="${project.build.directory}" includes="Forge-Image-Downloader.exe" />
+                                            <fileset dir="${project.build.directory}" includes="Forge-Image-Downloader.jar" />
                                         </copy>
-                                        <chmod file="${project.build.directory}/${project.build.finalName}/forgecardimagedownloader.sh" perm="a+rx" />
-                                        <chmod file="${project.build.directory}/${project.build.finalName}/forgecardimagedownloader.command" perm="a+rx" />
-                                        <chmod file="${project.build.directory}/${project.build.finalName}/forgecardimagedownloader.exe" perm="a+rx" />
+                                        <chmod file="${project.build.directory}/${project.build.finalName}/Forge-Image-Downloader.sh" perm="a+rx" />
+                                        <chmod file="${project.build.directory}/${project.build.finalName}/Forge-Image-Downloader.command" perm="a+rx" />
+                                        <chmod file="${project.build.directory}/${project.build.finalName}/Forge-Image-Downloader.exe" perm="a+rx" />
                                         <zip destfile="${project.build.directory}/${project.build.finalName}.zip">
                                             <zipfileset filemode="755" dir="${project.build.directory}/${project.build.finalName}">
                                                 <include name="readme.txt" />
-                                                <include name="forgecardimagedownloader.sh" />
-                                                <include name="forgecardimagedownloader.command" />
-                                                <include name="forgecardimagedownloader.exe" />
+                                                <include name="Forge-Image-Downloader.sh" />
+                                                <include name="Forge-Image-Downloader.command" />
+                                                <include name="Forge-Image-Downloader.exe" />
                                             </zipfileset>
                                             <zipfileset dir="${project.build.directory}/${project.build.finalName}">
                                                 <include name="**" />
                                                 <exclude name="readme.txt" />
-                                                <exclude name="forgecardimagedownloader.sh" />
-                                                <exclude name="forgecardimagedownloader.command" />
-                                                <exclude name="forgecardimagedownloader.exe" />
+                                                <exclude name="Forge-Image-Downloader.sh" />
+                                                <exclude name="Forge-Image-Downloader.command" />
+                                                <exclude name="Forge-Image-Downloader.exe" />
                                             </zipfileset>
                                         </zip>
                                     </target>
@@ -170,10 +170,10 @@
                             </execution>
                         </executions>
                     </plugin>
-                    
+
                 </plugins>
             </build>
         </profile>
     </profiles>
-    
+
 </project>

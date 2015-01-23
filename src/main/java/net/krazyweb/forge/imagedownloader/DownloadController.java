@@ -275,7 +275,7 @@ public class DownloadController {
 						updateProgress(currentProgress.value++, numberOfCards);
 
 					});
-					
+
 					return null;
 
 				}
