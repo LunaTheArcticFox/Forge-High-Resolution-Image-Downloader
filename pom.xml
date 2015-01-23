@@ -25,6 +25,13 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <url>https://github.com/KrazyTheFox/Forge-High-Resolution-Image-Downloader</url>
+        <connection>scm:git:https://github.com/KrazyTheFox/Forge-High-Resolution-Image-Downloader.git</connection>
+        <developerConnection>scm:git:https://github.com/KrazyTheFox/Forge-High-Resolution-Image-Downloader.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
@@ -174,6 +181,35 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.jutzig</groupId>
+                        <artifactId>github-release-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>github-upload</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>release</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <releaseName>v1.2.0</releaseName>
+                                    <tag>v1.2.0</tag>
+                                    <artifact>${project.build.directory}/${project.build.finalName}.zip</artifact>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
 </project>
