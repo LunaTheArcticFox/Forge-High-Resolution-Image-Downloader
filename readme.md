@@ -1,5 +1,5 @@
-Forge Card Image Downloader
-Created by Mitchell Matthews
+# Forge Card Image Downloader
+## Created by Mitchell Matthews
 
 Forge's resource folder is in your Forge's installation folder and is called "res".
 
@@ -7,20 +7,14 @@ The "Highest Quality" option downloads the absolute best quality available. The 
 
 REQUIRES Java 8
 
----
----
+# Licenses
 
 JSoup license: http://jsoup.org/license
+
 Apache Commons license: http://commons.apache.org/proper/commons-daemon/license.html
 
----
+## JSoup
 
-JSoup:
-
-
-jsoup License
-
-The jsoup code-base (include source and compiled packages) are distributed under the open source MIT license as described below.
 The MIT License
 
 Copyright © 2009 - 2013 Jonathan Hedley (jonathan@hedley.net)
@@ -32,11 +26,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
-
----
-
-Apache Commons:
+## Apache Commons
 
                                  Apache License
                            Version 2.0, January 2004
